@@ -1,23 +1,19 @@
 
-import React, { useState } from 'react'
 import Login from './Login'
 import Logout from './Logout'
 import Register from './Register'
 
-export default function UserBar() {
-    const [ user, setUsername ] = useState('')
-    function setUser (e) { setUsername(e.target.value) }
+export default function UserBar({user, dispatch}) {
+    
     if (user) {
-        return <Logout user={user} setUser={setUser}/>
+        return <Logout user={user} dispatchUser={dispatch}/>
     } else {
         return (
             <div>
                 <h3>Login</h3>
-                <Login setUser={setUser}/>
+                <Login dispatchUser={dispatch}/>
                 <h3>Register</h3>
-                <Register setUser={setUser}/>
-                <h3>Logout</h3>
-                <Logout user={user} setUser={setUser}/>
+                <Register dispatchUser={dispatch}/>               
             </div>
         )
     }

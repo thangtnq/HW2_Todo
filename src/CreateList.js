@@ -1,20 +1,50 @@
-import React, {useState} from "react"
+import React, {useState, useContext, useEffect} from "react"
+import {StateContext} from ".context"
+import {useResource} from 'react-request-hook'
 
 
-export default function CreateList({index, dispatch}) {
+export default function CreateList() {
+
+  const {dispatch} = useContext(StateContext);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+
 
   function handleTitle (e) { setTitle(e.target.value) };
   function handleContent (e) {setContent(e.target.value)};
   function clearForm() {setTitle(''); setContent('')};
 
   const dateCreated = Date(Date.now());
-  let isComplete = false;
+  const isComplete = false;
+  const dateCompleted = null;
+
+  const [ todo, createTodo] = useResource(({title, content, dateCreated, isComplete, dateCompleted}) => ({ 
+    url: '/todo',
+    method: 'post',
+    data: {title, content, dateCreated, isComplete, dateCompleted}
+  }))
+
+
+  function handleCreate() {
+    createTodo({title, content, dateCreated, isComplete, dateCompleted})
+    clearForm()
+  }
+
+  useEffect(() => {
+    if (todo && todo.isLoading === false && todo.data) {
+        dispatch({
+            type: "CREATE",
+            title: todo.data.title,
+            content: todo.data.content,
+            dateCreated: todo.data.dateCreated,
+            todoId: todo.data.id
+        })
+    }
+}, [todo])
+
   return (
       <form onSubmit={e => {e.preventDefault()
-            clearForm()
-            dispatch({type: "CREATE", title, content, dateCreated, index, isComplete})}}>
+            handleCreate()}}>
           <h3>Add new item</h3>
           <div>
               <label htmlFor="create-title">Title: </label>
